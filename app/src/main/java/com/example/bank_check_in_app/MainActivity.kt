@@ -34,6 +34,13 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     var phoneNumber by remember { mutableStateOf("") }
     var isValid by remember { mutableStateOf(true) }
+    var selectedBranch by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) } // Controls dropdown visibility
+    val branchOptions = listOf(
+        "Alexandria branch",
+        "Kafr Abdo branch",
+        "Smouha branch"
+    )
 
     Scaffold(
     modifier = Modifier.fillMaxSize()
@@ -101,6 +108,73 @@ fun MainScreen() {
                 fontSize = 14.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        
+         // Dropdown for Branch Selection
+         Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // OutlinedTextField for branch, that opens dropdown when clicked
+            OutlinedTextField(
+                value = selectedBranch.ifEmpty { "Select Branch" },
+                onValueChange = {},
+                enabled = false,
+                readOnly = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledContainerColor = Color.Transparent,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                label = { Text("Branch") },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Dropdown Icon"
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = true } // Open dropdown on click anywhere in OutlinedTextField
+            )
+
+            // Dropdown menu that expands when clicked
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .fillMaxWidth() // Set dropdown menu width to full screen
+                    .padding(horizontal = 16.dp) // Optional padding for aesthetics
+            ) {
+                branchOptions.forEach { branch ->
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedBranch = branch
+                            expanded = false
+                        },
+                        text = { Text(branch) }
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Submit Button
+        Button(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth(),
+             enabled = phoneNumber.length == 10 && selectedBranch.isNotEmpty() // Button is enabled only if both conditions are met
+        ) {
+            Text("Check In")
         }
     }
 }
